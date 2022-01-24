@@ -2,10 +2,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class RelaxableArray {
 
-    private boolean precisionReached;
     private int arraySize;
     private double[][] arrayToRelax;
-
     private double[][] correctRelaxedArray;
 
     public RelaxableArray(int arraySize, int randMin, int randMax) {
@@ -21,14 +19,6 @@ public class RelaxableArray {
 
     public void setArraySize(int arraySize) {
         this.arraySize = arraySize;
-    }
-
-    public boolean isPrecisionReached() {
-        return precisionReached;
-    }
-
-    public void setPrecisionReached(boolean precisionReached) {
-        this.precisionReached = precisionReached;
     }
 
     public double[][] getArrayToRelax() {
@@ -50,13 +40,17 @@ public class RelaxableArray {
                 correctRelaxedArray[row][column] = correctValue;
                 arrayToRelax[row][column] = correctValue;
                 if (row != 0 && row != arraySize-1 && column != 0 && column != arraySize-1) {
-                    arrayToRelax[row][column] = ThreadLocalRandom.current().nextInt(randMin, randMax);
+                    if (randMin == 0 && randMax == 0) {
+                        arrayToRelax[row][column] = 0;
+                    } else {
+                        arrayToRelax[row][column] = ThreadLocalRandom.current().nextInt(randMin, randMax);
+                    }
                 }
             }
         }
     }
 
-    private double getValueInCorrectArray(int row, int column) {
+    public double getValueInCorrectArray(int row, int column) {
         return correctRelaxedArray[row][column];
     }
 }

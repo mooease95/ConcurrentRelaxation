@@ -15,9 +15,9 @@ public class Relaxation {
         ProgramHelper.logArgs(noOfThreads, precision, arraySize, randMin, randMax);
 
         RelaxableArray relaxableArray = new RelaxableArray(arraySize, randMin, randMax);
-        ProgramHelper.logArray(relaxableArray);
+        ProgramHelper.logArray(relaxableArray, null);
 
-        SequentialRelaxer sequentialRelaxer = new SequentialRelaxer(relaxableArray);
-
+        SequentialRelaxer sequentialRelaxer = new SequentialRelaxer(relaxableArray, precision);
+        sequentialRelaxer.relaxArrayTry01();
     }
 }

@@ -16,7 +16,7 @@ public class ProgramHelper {
                 + "randMax: " + randMax);
     }
 
-    public static void logArray(RelaxableArray relaxableArray) {
+    public static void logArray(RelaxableArray relaxableArray, double[][] relaxedArray) {
         DecimalFormat df = new DecimalFormat("###.###");
         df.setRoundingMode(RoundingMode.CEILING);
         int arraySize = relaxableArray.getArraySize();
@@ -29,8 +29,13 @@ public class ProgramHelper {
             }
             System.out.println("\n");
         }
-        System.out.println("Printing array yet to be relaxed.");
-        array = relaxableArray.getArrayToRelax();
+        if (relaxedArray == null) {
+            System.out.println("Printing array yet to be relaxed.");
+            array = relaxableArray.getArrayToRelax();
+        } else {
+            System.out.println("Printing relaxed array.");
+            array = relaxedArray;
+        }
         for (int row = 0; row < arraySize; row++) {
             for (int column = 0; column < arraySize; column++) {
                 System.out.print(df.format(array[row][column]));
