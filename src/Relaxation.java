@@ -15,9 +15,14 @@ public class Relaxation {
         ProgramHelper.logArgs(noOfThreads, precision, arraySize, randMin, randMax);
 
         RelaxableArray relaxableArray = new RelaxableArray(arraySize, randMin, randMax);
-        ProgramHelper.logArray(relaxableArray, null);
+        // ProgramHelper.logArray(relaxableArray, null);
 
+        long start = System.currentTimeMillis();
         SequentialRelaxer sequentialRelaxer = new SequentialRelaxer(relaxableArray, precision);
-        sequentialRelaxer.relaxArrayTry01();
+        sequentialRelaxer.relaxArray();
+        long finish = System.currentTimeMillis();
+        long timeElapsed = finish - start;
+        System.out.println("Time taken to sequentially relax=[" + timeElapsed/1000 + "s].");
+
     }
 }

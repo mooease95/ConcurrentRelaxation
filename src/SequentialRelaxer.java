@@ -14,69 +14,40 @@ public class SequentialRelaxer {
         stepsTaken = 0;
     }
 
-    private double average(int x, int y) {
-        return (arrayToRelax[x][y-1] + arrayToRelax[x][y+1] + arrayToRelax[x-1][y] + arrayToRelax[x+1][y])/4;
+    private double averageArray(double[][] array, int x, int y) {
+        return (array[x][y-1] + array[x][y+1] + array[x-1][y] + array[x+1][y])/4;
     }
 
-    // TODO: New implementation of relaxing. Problems facing/solved: (1) Last value in array reaches precision so we stop.
-    // TODO: (2) One value reaches precision and stops, so others stagnate and stop changing without reaching precision.
-    public void relaxArrayTry01() {
+    public void relaxArray() {
         System.out.println("****************");
         System.out.println("Starting to relax array sequentially");
         int size = arrayToRelax.length;
-        boolean needAnotherIteration = true;
-        while (needAnotherIteration) {
-            needAnotherIteration = false;
+        boolean needsAnotherIteration = true;
+        while (needsAnotherIteration) {
+            needsAnotherIteration = false;
             stepsTaken++;
-            for (int row = 1; row < size-1; row++) {
-                for (int column = 1; column < size - 1; column++) {
-                    double value = average(row, column);
-                    arrayToRelax[row][column] = value;
-                    boolean precisionReachedForCurrentValue = checkPrecision(value, row, column);
-                    if (!precisionReachedForCurrentValue) {
-                        needAnotherIteration = true;
-                    }
-                }
+            double[][] newArrayToRelax = new double[size][size];
+            for (int i = 0; i < size; i++) {
+                System.arraycopy(arrayToRelax[i], 0, newArrayToRelax[i], 0, arrayToRelax[0].length);
             }
-        }
-        System.out.println("****************");
-        System.out.println("PRECISION REACHED FOR ALL!! Steps taken=[" + stepsTaken + "].");
-        ProgramHelper.logArray(relaxableArray, arrayToRelax);
-    }
-
-    public void relaxArrayTry00() {
-        System.out.println("****************");
-        System.out.println("Starting to relax array sequentially");
-        int size = arrayToRelax.length;
-        while (!precisionReached) {
-            precisionReached = true;
-            stepsTaken++;
             for (int row = 1; row < size-1; row++) {
                 for (int column = 1; column < size-1; column++) {
-                    double value = arrayToRelax[row][column];
-                    System.out.println("Looking into row=[" + row + "], column=[" + column + "], value=[" + value + "].");
-                    boolean isPrecisionReachedForValue = checkPrecision(value, row, column);
-                    if (!isPrecisionReachedForValue && !precisionReached) {
-                        precisionReached = false;
-                        System.out.println("Precision not reached. Averaging.");
-                        arrayToRelax[row][column] = average(row, column);
-                        System.out.println("Value after average = [" + arrayToRelax[row][column] + "].");
+                    double newAvgValue = averageArray(newArrayToRelax, row, column);
+                    arrayToRelax[row][column] = newAvgValue;
+                    boolean precisionReachedForCurrentValue = checkPrecision(newAvgValue, row, column);
+                    if (!precisionReachedForCurrentValue) {
+                        needsAnotherIteration = true; // if we haven't reached precision, we need another iteration
                     }
                 }
             }
         }
         System.out.println("****************");
         System.out.println("PRECISION REACHED FOR ALL!! Steps taken=[" + stepsTaken + "].");
-        ProgramHelper.logArray(relaxableArray, arrayToRelax);
+        // ProgramHelper.logArray(relaxableArray, arrayToRelax);
     }
 
     private boolean checkPrecision(double relaxedValue, int row, int column) {
         double correctValue = relaxableArray.getValueInCorrectArray(row, column);
-        System.out.println("correctValue=[" + correctValue + "], relaxedValue=[" + relaxedValue + "].");
-        if (Math.abs(relaxedValue-correctValue) <= targetPrecision) {
-            return true;
-        } else {
-            return false;
-        }
+        return Math.abs(relaxedValue - correctValue) <= targetPrecision;
     }
 }

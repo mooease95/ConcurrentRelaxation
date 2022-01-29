@@ -4,7 +4,8 @@ import java.text.DecimalFormat;
 public class ProgramHelper {
 
     public static double functionInArray(double x, double y) {
-        return x*x + y*y;
+        // return x*x + y*y;
+        return x + y;
     }
 
     public static void logArgs(int noOfThreads, double precision, int arraySize, int randMin, int randMax) {
