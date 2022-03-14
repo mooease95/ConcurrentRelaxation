@@ -5,13 +5,15 @@ public class SequentialRelaxer {
     private boolean precisionReached;
     private double targetPrecision;
     private int stepsTaken;
+    private boolean debug;
 
-    public SequentialRelaxer(RelaxableArray relaxableArray, double targetPrecision) {
+    public SequentialRelaxer(RelaxableArray relaxableArray, double targetPrecision, boolean debug) {
         this.relaxableArray = relaxableArray;
         this.arrayToRelax = relaxableArray.getArrayToRelax();
         precisionReached = false;
         this.targetPrecision = targetPrecision;
         stepsTaken = 0;
+        this.debug = debug;
     }
 
     private double averageArray(double[][] array, int x, int y) {
@@ -43,7 +45,7 @@ public class SequentialRelaxer {
         }
         System.out.println("****************");
         System.out.println("PRECISION REACHED FOR ALL!! Steps taken=[" + stepsTaken + "].");
-        // ProgramHelper.logArray(relaxableArray, arrayToRelax);
+        if (debug) ProgramHelper.logArray(relaxableArray, arrayToRelax);
     }
 
     private boolean checkPrecision(double relaxedValue, int row, int column) {
