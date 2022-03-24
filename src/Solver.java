@@ -30,12 +30,12 @@ public class Solver {
         System.out.println("****************");
         System.out.println("Starting to relax array sequentially");
         System.out.println("****************");
-        ConcurrentRelaxer concurrentRelaxer = new ConcurrentRelaxer(context);
-        concurrentRelaxer.start();
+        ConcurrentRelaxerFactory concurrentRelaxerFactory = new ConcurrentRelaxerFactory(context);
+        concurrentRelaxerFactory.create();
     }
 
     private void solveSequentially() {
-        RelaxableArray relaxableArray = new RelaxableArray(arraySize, randMin, randMax);
+        RelaxableArray relaxableArray = new RelaxableArray(arraySize, randMin, randMax); // TODO: Array should be generated before solvers are called.
         if (debug) ProgramHelper.logArray(relaxableArray, null);
         long start = System.currentTimeMillis();
         SequentialRelaxer sequentialRelaxer = new SequentialRelaxer(relaxableArray, context);
