@@ -6,11 +6,5 @@ public class ThreadManager {
         this.noOfThreads = noOfThreads;
     }
 
-    public void createThreads() {
-        ConcurrentRelaxer concurrentRelaxer = new ConcurrentRelaxer();
-        for (int i = 0; i < noOfThreads; i++) {
-            Thread t = new Thread(concurrentRelaxer);
-            t.start();
-        }
-    }
+
 }

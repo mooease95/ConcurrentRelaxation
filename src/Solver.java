@@ -30,9 +30,8 @@ public class Solver {
         System.out.println("****************");
         System.out.println("Starting to relax array sequentially");
         System.out.println("****************");
-        System.out.println("Starting ThreadManager!");
-        ThreadManager threadManager = new ThreadManager(noOfThreads);
-        threadManager.createThreads();
+        ConcurrentRelaxer concurrentRelaxer = new ConcurrentRelaxer(context);
+        concurrentRelaxer.start();
     }
 
     private void solveSequentially() {
