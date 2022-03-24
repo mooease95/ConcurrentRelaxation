@@ -12,10 +12,17 @@ public class ConcurrentRelaxer implements Runnable{
     }
 
     private void createThreads() {
-        for (int i = 0; i < context.getNoOfThreads(); i++) {
+        int noOfThreads = context.getNoOfThreads();
+        if (noOfThreads > context.getArraySize()-2) {
+            noOfThreads = context.getArraySize()-2;
+            System.out.println("Warning: Number of threads specified is more than required for optimum relaxation. " +
+                    "Flooring to " + noOfThreads + ".");
+        }
+        for (int i = 0; i < noOfThreads; i++) {
             Thread t = new Thread(this);
             t.start();
         }
+        System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Count=" + count + ".");
     }
 
     @Override
