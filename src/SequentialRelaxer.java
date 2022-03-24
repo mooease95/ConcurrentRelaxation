@@ -7,13 +7,13 @@ public class SequentialRelaxer {
     private int stepsTaken;
     private boolean debug;
 
-    public SequentialRelaxer(RelaxableArray relaxableArray, double targetPrecision, boolean debug) {
+    public SequentialRelaxer(RelaxableArray relaxableArray, RelaxationContext context) {
         this.relaxableArray = relaxableArray;
         this.arrayToRelax = relaxableArray.getArrayToRelax();
         precisionReached = false;
-        this.targetPrecision = targetPrecision;
+        this.targetPrecision = context.getPrecision();
         stepsTaken = 0;
-        this.debug = debug;
+        this.debug = context.isDebug();
     }
 
     private double averageArray(double[][] array, int x, int y) {
