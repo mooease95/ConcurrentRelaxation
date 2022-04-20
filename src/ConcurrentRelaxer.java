@@ -45,13 +45,18 @@ public class ConcurrentRelaxer implements Runnable {
     public void run() {
         int rowNumber = -1;
         try {
-//            if (debug) System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Count=" + count + ".");
-            synchronized (this) {
-                rowNumber = rows.pop();
+            while (!rows.empty()) {
+                synchronized (this) {
+                    if (!rows.empty()) {
+                        rowNumber = rows.pop();
+                        // TODO: This should populate an array/ArrayList for each thread.
+                    }
+                }
             }
+//            if (debug) System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Count=" + count + ".");
             System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Row picked=" + rowNumber + ".");
             while (precisionReached) {
-                count++;
+                count++; // TODO: This should do the relaxation
             }
         } catch (Exception e) {
             System.err.println("Exception = " + e);
