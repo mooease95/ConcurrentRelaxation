@@ -1,30 +1,30 @@
+import java.util.Stack;
+
 public class ConcurrentRelaxerFactory {
 
     private RelaxationContext context;
+    private RelaxableArray relaxableArray;
 
     public ConcurrentRelaxerFactory(RelaxableArray relaxableArray, RelaxationContext context) {
+        this.relaxableArray = relaxableArray;
         this.context = context;
-        create(relaxableArray);
     }
 
-    public void create(RelaxableArray relaxableArray) {
-        ConcurrentRelaxer concurrentRelaxer = new ConcurrentRelaxer(relaxableArray, context);
-        createThreads(concurrentRelaxer);
+    public ConcurrentRelaxer create() {
+        Stack<Integer> rows = rowAssignment();
+        return new ConcurrentRelaxer(relaxableArray, context, rows);
     }
 
-    private void createThreads(ConcurrentRelaxer concurrentRelaxer) {
-        int noOfThreads = context.getNoOfThreads();
-        if (noOfThreads > context.getArraySize()-2) {
-            noOfThreads = context.getArraySize()-2;
-            System.out.println("Warning: Number of threads specified is more than required for optimum relaxation. " +
-                    "Flooring to " + noOfThreads + ".");
+    private Stack<Integer> rowAssignment() {
+        int totalRowsToAssign = relaxableArray.getArraySize() - 2;
+        Stack<Integer> rows = new Stack<>();
+        /*
+        For 5v5, totalRowsToAssign is 3. Skip the first (0) and last (4) rows as they are boundaries. 
+        Range should be 1,2,3.
+         */
+        for (int i = 1; i <= totalRowsToAssign; i++) { 
+            rows.push(i);
         }
-        for (int i = 0; i < noOfThreads; i++) {
-            Thread t = new Thread(concurrentRelaxer);
-            t.start();
-        }
-        ConcurrentRelaxer.count++;
-        System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Count=" + ConcurrentRelaxer.count +
-                ".");
+        return rows;
     }
 }
