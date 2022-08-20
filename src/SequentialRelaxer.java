@@ -1,4 +1,4 @@
-public class SequentialRelaxer {
+public class SequentialRelaxer implements Relaxer{
 
     private RelaxableArray relaxableArray;
     private double[][] arrayToRelax;

@@ -1,8 +1,7 @@
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Stack;
 
-public class ConcurrentRelaxer implements Runnable {
+public class ConcurrentRelaxerRunnable implements Runnable {
 
     private int count = 0;
     private RelaxableArray relaxableArray;
@@ -19,7 +18,7 @@ public class ConcurrentRelaxer implements Runnable {
 
     // private synchronized int[] rowsAssigned = {};
 
-    public ConcurrentRelaxer(RelaxableArray relaxableArray, RelaxationContext context, Map<Integer, int[]> rowsMap) {
+    public ConcurrentRelaxerRunnable(RelaxableArray relaxableArray, RelaxationContext context, Map<Integer, int[]> rowsMap) {
         this.relaxableArray = relaxableArray;
         this.arrayToRelax = relaxableArray.getArrayToRelax();
         this.precisionReached = false;
@@ -62,9 +61,9 @@ public class ConcurrentRelaxer implements Runnable {
         try {
             synchronized (this) {
                 if (!rows.empty()) {
-                    rowNumber = rows.pop();
+                    // rowNumber = rows.pop();
                     // TODO: This should populate an array/ArrayList for each thread.
-                    if (debug) System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Row number=" + rowNumber + ".");
+                    // if (debug) System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Row number=" + rowNumber + ".");
                 }
             }
         } catch (Exception e) {

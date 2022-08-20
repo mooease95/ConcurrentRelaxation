@@ -22,30 +22,31 @@ public class Solver {
     }
 
     public void start() {
-        solveSequentially();
-        solveConcurrently();
+        RelaxableArray relaxableArray = new RelaxableArray(arraySize, randMin, randMax);
+        solveSequentially(relaxableArray);
+        // solveConcurrently(relaxableArray);
     }
 
-    private void solveConcurrently() {
-        RelaxableArray relaxableArray = new RelaxableArray(arraySize, randMin, randMax); // TODO: Array should be generated before solvers are called.
+    private void solveConcurrently(RelaxableArray relaxableArray) {
         if (debug) ProgramHelper.logArray(relaxableArray, null);
         System.out.println("****************");
         System.out.println("Starting to relax array concurrently");
         System.out.println("****************");
         ConcurrentRelaxerFactory concurrentRelaxerFactory = new ConcurrentRelaxerFactory(relaxableArray, context);
-        ConcurrentRelaxer concurrentRelaxer = concurrentRelaxerFactory.create();
-        concurrentRelaxer.createThreadsAndRun();
+        ConcurrentRelaxerRunnable concurrentRelaxerRunnable = concurrentRelaxerFactory.create();
+        concurrentRelaxerRunnable.createThreadsAndRun();
     }
 
-    private void solveSequentially() {
-        RelaxableArray relaxableArray = new RelaxableArray(arraySize, randMin, randMax); // TODO: Array should be generated before solvers are called.
+    private void solveSequentially(RelaxableArray relaxableArray) {
         if (debug) ProgramHelper.logArray(relaxableArray, null);
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime();
+        RelaxerFactory seqeuntialRelaxerFactory = new SequentialRelaxerFactory();
+        seqeuntialRelaxerFactory.createRelaxer(relaxableArray, context);
         SequentialRelaxer sequentialRelaxer = new SequentialRelaxer(relaxableArray, context);
         sequentialRelaxer.relaxArray();
-        long finish = System.currentTimeMillis();
-        long timeElapsed = finish - start;
-        System.out.println("Time taken to sequentially relax=[" + timeElapsed/1000 + "s].");
+        long finish = System.nanoTime();
+        float timeElapsed = finish - start;
+        System.out.println("Time taken to sequentially relax=[" + timeElapsed/1000000 + " milliseconds].");
 
     }
 }

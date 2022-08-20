@@ -10,9 +10,9 @@ public class ConcurrentRelaxerFactory {
         this.context = context;
     }
 
-    public ConcurrentRelaxer create() {
+    public ConcurrentRelaxerRunnable create() {
         Map<Integer, int[]> rowsMap = rowAssignment();
-        return new ConcurrentRelaxer(relaxableArray, context, rowsMap);
+        return new ConcurrentRelaxerRunnable(relaxableArray, context, rowsMap);
     }
 
     private Map<Integer, int[]> rowAssignment() {
