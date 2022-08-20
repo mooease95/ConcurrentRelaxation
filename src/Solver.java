@@ -27,26 +27,24 @@ public class Solver {
         // solveConcurrently(relaxableArray);
     }
 
+    private void solveSequentially(RelaxableArray relaxableArray) {
+        if (debug) ProgramHelper.logArray(relaxableArray, null);
+        long start = System.nanoTime();
+        RelaxerFactory seqeuntialRelaxerFactory = new SequentialRelaxerFactory(relaxableArray, context);
+        Relaxer sequentialRelaxer = seqeuntialRelaxerFactory.createRelaxer();
+        sequentialRelaxer.relaxArray();
+        long finish = System.nanoTime();
+        float timeElapsed = finish - start;
+        System.out.println("Time taken to sequentially relax=[" + timeElapsed/1000000 + " milliseconds].");
+    }
+
     private void solveConcurrently(RelaxableArray relaxableArray) {
         if (debug) ProgramHelper.logArray(relaxableArray, null);
         System.out.println("****************");
         System.out.println("Starting to relax array concurrently");
         System.out.println("****************");
         ConcurrentRelaxerFactory concurrentRelaxerFactory = new ConcurrentRelaxerFactory(relaxableArray, context);
-        ConcurrentRelaxerRunnable concurrentRelaxerRunnable = concurrentRelaxerFactory.create();
-        concurrentRelaxerRunnable.createThreadsAndRun();
-    }
-
-    private void solveSequentially(RelaxableArray relaxableArray) {
-        if (debug) ProgramHelper.logArray(relaxableArray, null);
-        long start = System.nanoTime();
-        RelaxerFactory seqeuntialRelaxerFactory = new SequentialRelaxerFactory();
-        seqeuntialRelaxerFactory.createRelaxer(relaxableArray, context);
-        SequentialRelaxer sequentialRelaxer = new SequentialRelaxer(relaxableArray, context);
-        sequentialRelaxer.relaxArray();
-        long finish = System.nanoTime();
-        float timeElapsed = finish - start;
-        System.out.println("Time taken to sequentially relax=[" + timeElapsed/1000000 + " milliseconds].");
-
+        Relaxer concurrentRelaxer = concurrentRelaxerFactory.createRelaxer();
+        // concurrentRelaxer.createThreadsAndRun();
     }
 }

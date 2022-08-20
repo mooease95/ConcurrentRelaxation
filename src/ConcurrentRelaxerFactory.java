@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class ConcurrentRelaxerFactory {
+public class ConcurrentRelaxerFactory implements RelaxerFactory{
 
     private RelaxationContext context;
     private RelaxableArray relaxableArray;
@@ -10,10 +10,14 @@ public class ConcurrentRelaxerFactory {
         this.context = context;
     }
 
-    public ConcurrentRelaxerRunnable create() {
-        Map<Integer, int[]> rowsMap = rowAssignment();
-        return new ConcurrentRelaxerRunnable(relaxableArray, context, rowsMap);
+    public Relaxer createRelaxer() {
+        return new ConcurrentRelaxer();
     }
+
+//    public Relaxer createRelaxer() {
+//        Map<Integer, int[]> rowsMap = rowAssignment();
+//        return new ConcurrentRelaxerRunnable(relaxableArray, context, rowsMap);
+//    }
 
     private Map<Integer, int[]> rowAssignment() {
         Map<Integer, int[]> rowsMap = new HashMap<>();
