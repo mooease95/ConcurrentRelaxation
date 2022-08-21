@@ -14,8 +14,8 @@ public class ConcurrentRelaxer implements Relaxer {
 
     @Override
     public void relaxArray() {
-        Stack<Integer> rowsMap = rowAssignment();
-        ConcurrentRelaxerRunnable runnable = new ConcurrentRelaxerRunnable(relaxableArray, context, rowsMap);
+        Stack<Integer> rowStack = rowAssignment();
+        ConcurrentRelaxerRunnable runnable = new ConcurrentRelaxerRunnable(relaxableArray, context, rowStack);
         runnable.createThreadsAndRun();
     }
 

@@ -18,7 +18,7 @@ public class ConcurrentRelaxerRunnable implements Runnable {
 
     // private synchronized int[] rowsAssigned = {};
 
-    public ConcurrentRelaxerRunnable(RelaxableArray relaxableArray, RelaxationContext context, Stack<Integer> rowsMap) {
+    public ConcurrentRelaxerRunnable(RelaxableArray relaxableArray, RelaxationContext context, Stack<Integer> rows) {
         this.relaxableArray = relaxableArray;
         this.arrayToRelax = relaxableArray.getArrayToRelax();
         this.precisionReached = false;
@@ -45,30 +45,22 @@ public class ConcurrentRelaxerRunnable implements Runnable {
     @Override
     public void run() {
         int rowNumber = -1;
-        // Check once without sync (all threads waiting), then check again inside sync to ensure there is still row left to ne assigned.
-        while (!rows.empty()) {
-
-        }
-        if (debug) System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Count=" + count + ".");
-        System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Row picked=" + rowNumber + ".");
-        while (precisionReached) {
-            count++; // TODO: This should do the relaxation
-        }
-    }
-
-    private int[] getRow() {
-        int[] assignedRows = new int[arraySize];
         try {
-            synchronized (this) {
-                if (!rows.empty()) {
-                    // rowNumber = rows.pop();
-                    // TODO: This should populate an array/ArrayList for each thread.
-                    // if (debug) System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Row number=" + rowNumber + ".");
+            while (!rows.empty()) {
+                synchronized (this) {
+                    if (!rows.empty()) {
+                        rowNumber = rows.pop();
+                        // TODO: This should populate an array/ArrayList for each thread.
+                    }
                 }
+            }
+//            if (debug) System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Count=" + count + ".");
+            System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Row picked=" + rowNumber + ".");
+            while (precisionReached) {
+                count++; // TODO: This should do the relaxation
             }
         } catch (Exception e) {
             System.err.println("Exception = " + e);
         }
-        return assignedRows;
     }
 }
