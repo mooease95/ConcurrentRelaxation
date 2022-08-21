@@ -18,7 +18,7 @@ public class ConcurrentRelaxerRunnable implements Runnable {
 
     // private synchronized int[] rowsAssigned = {};
 
-    public ConcurrentRelaxerRunnable(RelaxableArray relaxableArray, RelaxationContext context, Map<Integer, int[]> rowsMap) {
+    public ConcurrentRelaxerRunnable(RelaxableArray relaxableArray, RelaxationContext context, Stack<Integer> rowsMap) {
         this.relaxableArray = relaxableArray;
         this.arrayToRelax = relaxableArray.getArrayToRelax();
         this.precisionReached = false;
