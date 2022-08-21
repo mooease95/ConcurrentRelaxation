@@ -45,11 +45,11 @@ public class ConcurrentRelaxerRunnable implements Runnable {
     @Override
     public void run() {
         int rowNumber = -1;
-        // Check once without sync (all threads waiting), then check again inside synch to ensure there is still row left to ne assigned.
+        // Check once without sync (all threads waiting), then check again inside sync to ensure there is still row left to ne assigned.
         while (!rows.empty()) {
 
         }
-//            if (debug) System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Count=" + count + ".");
+        if (debug) System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Count=" + count + ".");
         System.out.println("Thread=[" + Thread.currentThread().getName() + "] reporting for duty. Row picked=" + rowNumber + ".");
         while (precisionReached) {
             count++; // TODO: This should do the relaxation

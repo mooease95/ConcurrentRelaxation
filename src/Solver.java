@@ -24,7 +24,7 @@ public class Solver {
     public void start() {
         RelaxableArray relaxableArray = new RelaxableArray(arraySize, randMin, randMax);
         solveSequentially(relaxableArray);
-        // solveConcurrently(relaxableArray);
+        solveConcurrently(relaxableArray);
     }
 
     private void solveSequentially(RelaxableArray relaxableArray) {
@@ -45,6 +45,6 @@ public class Solver {
         System.out.println("****************");
         ConcurrentRelaxerFactory concurrentRelaxerFactory = new ConcurrentRelaxerFactory(relaxableArray, context);
         Relaxer concurrentRelaxer = concurrentRelaxerFactory.createRelaxer();
-        // concurrentRelaxer.createThreadsAndRun();
+        concurrentRelaxer.relaxArray();
     }
 }
