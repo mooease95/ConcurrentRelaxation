@@ -14,21 +14,7 @@ public class ConcurrentRelaxer implements Relaxer {
 
     @Override
     public void relaxArray() {
-        Stack<Integer> rowStack = rowAssignment();
-        ConcurrentRelaxerRunnable runnable = new ConcurrentRelaxerRunnable(relaxableArray, context, rowStack);
+        ConcurrentRelaxerRunnable runnable = new ConcurrentRelaxerRunnable(relaxableArray, context);
         runnable.createThreadsAndRun();
-    }
-
-    private Stack<Integer> rowAssignment() {
-        int totalRowsToAssign = relaxableArray.getArraySize() - 2;
-        Stack<Integer> rows = new Stack<>();
-        /*
-        For 5v5, totalRowsToAssign is 3. Skip the first (0) and last (4) rows as they are boundaries.
-        Range should be 1,2,3.
-         */
-        for (int i = 1; i <= totalRowsToAssign; i++) {
-            rows.push(i);
-        }
-        return rows;
     }
 }
