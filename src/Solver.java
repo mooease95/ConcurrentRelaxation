@@ -22,9 +22,8 @@ public class Solver {
     }
 
     public void start() {
-        RelaxableArray relaxableArray = new RelaxableArray(arraySize, randMin, randMax);
-        solveSequentially(relaxableArray);
-        solveConcurrently(relaxableArray);
+        solveSequentially(new RelaxableArray(arraySize, randMin, randMax));
+        solveConcurrently(new RelaxableArray(arraySize, randMin, randMax));
     }
 
     private void solveSequentially(RelaxableArray relaxableArray) {
