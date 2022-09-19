@@ -56,7 +56,6 @@ public class ConcurrentRelaxerRunnable implements Runnable {
     }
 
     private void initiateRelaxation(int[] rowList) {
-        RelaxerUtils.printThreadDebugMessages("Initiating relaxation");
         // All threads are doing this constantly. But each thread should have its own
         int size = arrayToRelax.length;
         boolean needsAnotherIteration = true;
@@ -69,8 +68,10 @@ public class ConcurrentRelaxerRunnable implements Runnable {
             }
             // TODO: All threads need to pause here before they can go round starting to modify arrayToRelax;
             RelaxerUtils.printThreadDebugMessages("First row= " + rowList[0] + ", last row= " + rowList[rowList.length - 1]);
-            for (int row = rowList[rowList.length - 1]; row >= rowList[0]; row--) {
+            for (int row = rowList[rowList.length - 1]; row <= rowList[0]; row++) {
+                RelaxerUtils.printThreadDebugMessages("Row= " + row);
                 for (int column = 1; column < size - 1; column++) {
+                    RelaxerUtils.printThreadDebugMessages("Relaxing [" + row + "][" + column + "]");
                     double newAvgValue = RelaxerUtils.averageArray(newArrayToRelax, row, column);
                     arrayToRelax[row][column] = newAvgValue; // TODO: This can't happen until other threads have finished copying.
                     boolean precisionReachedForCurrentValue = RelaxerUtils.checkPrecision(relaxableArray, newAvgValue, row, column, targetPrecision);
