@@ -68,7 +68,8 @@ public class ConcurrentRelaxerRunnable implements Runnable {
                 System.arraycopy(arrayToRelax[i], 0, newArrayToRelax[i], 0, arrayToRelax[0].length);
             }
             // TODO: All threads need to pause here before they can go round starting to modify arrayToRelax;
-            for (int row = rowList[0]; row < rowList[rowList.length - 1]; row++) {
+            RelaxerUtils.printThreadDebugMessages("First row= " + rowList[0] + ", last row= " + rowList[rowList.length - 1]);
+            for (int row = rowList[rowList.length - 1]; row >= rowList[0]; row--) {
                 for (int column = 1; column < size - 1; column++) {
                     double newAvgValue = RelaxerUtils.averageArray(newArrayToRelax, row, column);
                     arrayToRelax[row][column] = newAvgValue; // TODO: This can't happen until other threads have finished copying.
