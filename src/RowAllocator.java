@@ -9,12 +9,11 @@ public class RowAllocator {
 
     public RowAllocator(int threads, int assignableRows) {
         this.threads = threads;
-        this.assignableRows = assignableRows - 2;
+        this.assignableRows = assignableRows;
 
         rowsStack = new Stack<>();
         rowAssignment();
-
-        if (assignableRows % 2 == 0) {
+        if (assignableRows % threads == 0) {
             remainderAssigned = true;
         }
     }
@@ -22,18 +21,19 @@ public class RowAllocator {
     int[] allocateRows() {
         synchronized (this) {
             String threadName = Thread.currentThread().getName();
-            System.out.println("A thread is here: " + threadName); // TODO: For debug purpose, remove.
+            System.out.println("[" + threadName + "]: Arrived to get rows allocated."); // TODO: For debug purpose, remove.
             int rowsPerThread = assignableRows / threads;
             int[] rowsForThread;
             if (!remainderAssigned) {
+                System.out.println("[" + threadName + "]: Remainder not assigned."); // TODO: For debug purpose, remove.
                 rowsPerThread = rowsPerThread + 1;
                 remainderAssigned = true;
             }
             rowsForThread = new int[rowsPerThread];
-            System.out.println("Thread=[" + threadName + "] will take number of rows= " + rowsForThread.length); // TODO: For debug purpose, remove.
+            System.out.println("[" + threadName + "]: Will take number of rows= " + rowsForThread.length); // TODO: For debug purpose, remove.
             for (int i = 0; i < rowsPerThread; i++) {
                 int rowFromStack = rowsStack.pop();
-                System.out.println("Thread=[" + threadName + "] is taking row from stack: " + rowFromStack); // TODO: For debug purpose, remove.
+                System.out.println("[" + threadName + "]: Taking row from stack: " + rowFromStack); // TODO: For debug purpose, remove.
                 rowsForThread[i] = rowFromStack;
             }
             return rowsForThread;
