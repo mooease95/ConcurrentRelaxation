@@ -50,11 +50,39 @@ public class ConcurrentRelaxerRunnable implements Runnable {
             for (int i = 0; i < rowList.length; i++) {
                 System.out.println("[" + Thread.currentThread().getName() + "]: Reporting for duty. Row picked= " + rowList[i] + ".");
             }
-            while (precisionReached) {
-                count++; // TODO: This should do the relaxation
-            }
+            initiateRelaxation(rowList);
         } catch (Exception e) {
             System.err.println("Exception = " + e);
         }
+    }
+
+    private void initiateRelaxation(int[] rowList) {
+        // All threads are doing this constantly. But each thread should have its own
+        int size = arrayToRelax.length;
+        boolean needsAnotherIteration = true;
+        while (needsAnotherIteration) {
+            needsAnotherIteration = false;
+            stepsTaken++;
+            double[][] newArrayToRelax = new double[size][size];
+            for (int i = 0; i < size; i++) {
+                System.arraycopy(arrayToRelax[i], 0, newArrayToRelax[i], 0, arrayToRelax[0].length);
+            }
+            // TODO: All threads need to pause here before they can go round starting to modify arrayToRelax;
+            for (int row = rowList[0]; row < rowList[rowList.length - 1]; row++) {
+                for (int column = 1; column < size - 1; column++) {
+                    double newAvgValue = RelaxerUtils.averageArray(newArrayToRelax, row, column);
+                    arrayToRelax[row][column] = newAvgValue; // TODO: This can't happen until other threads have finished copying.
+                    boolean precisionReachedForCurrentValue = RelaxerUtils.checkPrecision(relaxableArray, newAvgValue, row, column, targetPrecision);
+                    if (!precisionReachedForCurrentValue) {
+                        needsAnotherIteration = true;
+                    }
+                }
+            }
+            // TODO: All threads should pause here for other threads
+            // TODO: But this is the run() method! Every thread is running a different version of it!
+        }
+        System.out.println("****************");
+        System.out.println("PRECISION REACHED FOR ALL!! Steps taken=[" + stepsTaken + "].");
+        if (debug) ProgramHelper.logArray(relaxableArray, arrayToRelax);
     }
 }

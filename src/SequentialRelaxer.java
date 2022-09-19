@@ -16,9 +16,7 @@ public class SequentialRelaxer implements Relaxer{
         this.debug = context.isDebug();
     }
 
-    private double averageArray(double[][] array, int x, int y) {
-        return (array[x][y-1] + array[x][y+1] + array[x-1][y] + array[x+1][y])/4;
-    }
+
 
     public void relaxArray() {
         System.out.println("****************");
@@ -34,9 +32,9 @@ public class SequentialRelaxer implements Relaxer{
             }
             for (int row = 1; row < size-1; row++) {
                 for (int column = 1; column < size-1; column++) {
-                    double newAvgValue = averageArray(newArrayToRelax, row, column);
+                    double newAvgValue = RelaxerUtils.averageArray(newArrayToRelax, row, column);
                     arrayToRelax[row][column] = newAvgValue;
-                    boolean precisionReachedForCurrentValue = checkPrecision(newAvgValue, row, column);
+                    boolean precisionReachedForCurrentValue = RelaxerUtils.checkPrecision(relaxableArray, newAvgValue, row, column, targetPrecision);
                     if (!precisionReachedForCurrentValue) {
                         needsAnotherIteration = true; // if we haven't reached precision, we need another iteration
                     }
@@ -46,10 +44,5 @@ public class SequentialRelaxer implements Relaxer{
         System.out.println("****************");
         System.out.println("PRECISION REACHED FOR ALL!! Steps taken=[" + stepsTaken + "].");
         if (debug) ProgramHelper.logArray(relaxableArray, arrayToRelax);
-    }
-
-    private boolean checkPrecision(double relaxedValue, int row, int column) {
-        double correctValue = relaxableArray.getValueInCorrectArray(row, column);
-        return Math.abs(relaxedValue - correctValue) <= targetPrecision;
     }
 }
