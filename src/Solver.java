@@ -23,7 +23,7 @@ public class Solver {
 
     public void start() {
         RelaxableArray relaxableArray = new RelaxableArray(arraySize, randMin, randMax);
-        solveSequentially(relaxableArray);
+        // solveSequentially(relaxableArray);
         solveConcurrently(relaxableArray);
     }
 

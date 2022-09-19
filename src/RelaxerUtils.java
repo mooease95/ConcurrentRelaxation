@@ -8,4 +8,8 @@ public class RelaxerUtils {
         double correctValue = relaxableArray.getValueInCorrectArray(row, column);
         return Math.abs(relaxedValue - correctValue) <= targetPrecision;
     }
+
+    public static void printThreadDebugMessages(String message) {
+        System.out.println("[" + Thread.currentThread().getName() +"]: " + message + ".");
+    }
 }

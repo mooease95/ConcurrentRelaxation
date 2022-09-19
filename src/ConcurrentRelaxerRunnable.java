@@ -46,9 +46,8 @@ public class ConcurrentRelaxerRunnable implements Runnable {
     public void run() {
         int[] rowList = rowAllocator.allocateRows();
         try {
-            if (debug) System.out.println("[" + Thread.currentThread().getName() + "]: Reporting for duty. Count=" + count + ".");
             for (int i = 0; i < rowList.length; i++) {
-                System.out.println("[" + Thread.currentThread().getName() + "]: Reporting for duty. Row picked= " + rowList[i] + ".");
+                RelaxerUtils.printThreadDebugMessages("Reporting for duty. Row picked= " + rowList[i]);
             }
             initiateRelaxation(rowList);
         } catch (Exception e) {
@@ -57,12 +56,13 @@ public class ConcurrentRelaxerRunnable implements Runnable {
     }
 
     private void initiateRelaxation(int[] rowList) {
+        RelaxerUtils.printThreadDebugMessages("Initiating relaxation");
         // All threads are doing this constantly. But each thread should have its own
         int size = arrayToRelax.length;
         boolean needsAnotherIteration = true;
         while (needsAnotherIteration) {
             needsAnotherIteration = false;
-            stepsTaken++;
+            stepsTaken++; // TODO: This is now being modified by all the threads, should be only one.
             double[][] newArrayToRelax = new double[size][size];
             for (int i = 0; i < size; i++) {
                 System.arraycopy(arrayToRelax[i], 0, newArrayToRelax[i], 0, arrayToRelax[0].length);
@@ -81,8 +81,8 @@ public class ConcurrentRelaxerRunnable implements Runnable {
             // TODO: All threads should pause here for other threads
             // TODO: But this is the run() method! Every thread is running a different version of it!
         }
-        System.out.println("****************");
-        System.out.println("PRECISION REACHED FOR ALL!! Steps taken=[" + stepsTaken + "].");
-        if (debug) ProgramHelper.logArray(relaxableArray, arrayToRelax);
+//        System.out.println("****************");
+//        System.out.println("PRECISION REACHED FOR ALL!! Steps taken=[" + stepsTaken + "].");
+//        if (debug) ProgramHelper.logArray(relaxableArray, arrayToRelax);
     }
 }
