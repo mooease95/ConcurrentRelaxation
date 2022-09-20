@@ -1,7 +1,3 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
-
 public class ConcurrentRelaxer implements Relaxer {
 
     private RelaxableArray relaxableArray;
@@ -15,6 +11,7 @@ public class ConcurrentRelaxer implements Relaxer {
     @Override
     public void relaxArray() {
         ConcurrentRelaxerRunnable runnable = new ConcurrentRelaxerRunnable(relaxableArray, context);
-        runnable.createThreadsAndRun();
+        double[][] arrayToRelax = runnable.setupAndRunThreads();
+        if (context.isDebug()) ProgramHelper.logArray(relaxableArray, arrayToRelax); // TODO: This isn't triggered. Has the main thread died?
     }
 }

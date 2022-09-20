@@ -9,7 +9,11 @@ public class RelaxerUtils {
         return Math.abs(relaxedValue - correctValue) <= targetPrecision;
     }
 
-    public static void printThreadDebugMessages(String message) {
-        System.out.println("[" + Thread.currentThread().getName() +"]: " + message + ".");
+    public static void printThreadDebugMessages(String message, boolean info) {
+        if (info) {
+            System.out.println("[" + Thread.currentThread().getName() +"]: " + message + ".");
+        } else {
+            System.err.println("[" + Thread.currentThread().getName() +"]: " + message + ".");
+        }
     }
 }

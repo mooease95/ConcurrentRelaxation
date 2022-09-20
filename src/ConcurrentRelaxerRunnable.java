@@ -1,3 +1,5 @@
+import java.util.concurrent.CyclicBarrier;
+
 public class ConcurrentRelaxerRunnable implements Runnable {
 
     private int count = 0;
@@ -12,6 +14,9 @@ public class ConcurrentRelaxerRunnable implements Runnable {
     private boolean debug;
 
     private RowAllocator rowAllocator;
+
+    private CyclicBarrier startRelaxation;
+    private CyclicBarrier precisionCheckpoint;
 
     public ConcurrentRelaxerRunnable(RelaxableArray relaxableArray, RelaxationContext context) {
         this.relaxableArray = relaxableArray;
@@ -35,11 +40,12 @@ public class ConcurrentRelaxerRunnable implements Runnable {
         rowAllocator = new RowAllocator(noOfThreads, arraySize - 2);
     }
 
-    public void createThreadsAndRun() {
+    public double[][] setupAndRunThreads() {
         for (int i = 0; i < noOfThreads; i++) {
             Thread t = new Thread(this);
             t.start();
         }
+        return arrayToRelax;
     }
 
     @Override
@@ -47,44 +53,68 @@ public class ConcurrentRelaxerRunnable implements Runnable {
         int[] rowList = rowAllocator.allocateRows();
         try {
             for (int i = 0; i < rowList.length; i++) {
-                RelaxerUtils.printThreadDebugMessages("Reporting for duty. Row picked= " + rowList[i]);
+                RelaxerUtils.printThreadDebugMessages("Reporting for duty. Row picked= " + rowList[i], true);
             }
             initiateRelaxation(rowList);
         } catch (Exception e) {
             System.err.println("Exception = " + e);
         }
+        RelaxerUtils.printThreadDebugMessages("Have finished relaxing", true);
     }
 
     private void initiateRelaxation(int[] rowList) {
-        // All threads are doing this constantly. But each thread should have its own
         int size = arrayToRelax.length;
         boolean needsAnotherIteration = true;
         while (needsAnotherIteration) {
             needsAnotherIteration = false;
-            stepsTaken++; // TODO: This is now being modified by all the threads, should be only one.
             double[][] newArrayToRelax = new double[size][size];
             for (int i = 0; i < size; i++) {
                 System.arraycopy(arrayToRelax[i], 0, newArrayToRelax[i], 0, arrayToRelax[0].length);
             }
-            // TODO: All threads need to pause here before they can go round starting to modify arrayToRelax;
-            RelaxerUtils.printThreadDebugMessages("First row= " + rowList[0] + ", last row= " + rowList[rowList.length - 1]);
+            try {
+                startRelaxation = new CyclicBarrier(noOfThreads-1, new IncrementCounter());
+                startRelaxation.await();
+            } catch (Exception e) {
+                RelaxerUtils.printThreadDebugMessages("Exception during relaxation starting barrier: \n" + e, false);
+                throw new RuntimeException(e);
+            }
+            // RelaxerUtils.printThreadDebugMessages("First row= " + rowList[0] + ", last row= " + rowList[rowList.length - 1], true);
             for (int row = rowList[rowList.length - 1]; row <= rowList[0]; row++) {
-                RelaxerUtils.printThreadDebugMessages("Row= " + row);
+                // RelaxerUtils.printThreadDebugMessages("Row= " + row, true);
                 for (int column = 1; column < size - 1; column++) {
-                    RelaxerUtils.printThreadDebugMessages("Relaxing [" + row + "][" + column + "]");
+                    // RelaxerUtils.printThreadDebugMessages("Relaxing [" + row + "][" + column + "]", true);
                     double newAvgValue = RelaxerUtils.averageArray(newArrayToRelax, row, column);
-                    arrayToRelax[row][column] = newAvgValue; // TODO: This can't happen until other threads have finished copying.
+                    arrayToRelax[row][column] = newAvgValue;
                     boolean precisionReachedForCurrentValue = RelaxerUtils.checkPrecision(relaxableArray, newAvgValue, row, column, targetPrecision);
                     if (!precisionReachedForCurrentValue) {
                         needsAnotherIteration = true;
                     }
                 }
             }
-            // TODO: All threads should pause here for other threads
-            // TODO: But this is the run() method! Every thread is running a different version of it!
+            try {
+                precisionCheckpoint = new CyclicBarrier(noOfThreads-1, new FinishRelaxation()); // TODO: Create new Runnable where the last thread does a precision check!
+                precisionCheckpoint.await();
+            } catch (Exception e) {
+                RelaxerUtils.printThreadDebugMessages("Exception at precision check barrier: \n" + e, false);
+                throw new RuntimeException(e);
+            }
         }
-//        System.out.println("****************");
-//        System.out.println("PRECISION REACHED FOR ALL!! Steps taken=[" + stepsTaken + "].");
-//        if (debug) ProgramHelper.logArray(relaxableArray, arrayToRelax);
+    }
+
+    class IncrementCounter implements Runnable {
+        @Override
+        public void run() {
+            stepsTaken++;
+            RelaxerUtils.printThreadDebugMessages("Final thread to hit startRelaxation barrier. Current step= " + stepsTaken, true);
+        }
+    }
+
+    class FinishRelaxation implements Runnable {
+        @Override
+        public void run() {
+            System.out.println("****************");
+            System.out.println("PRECISION REACHED FOR ALL!! Steps taken=[" + stepsTaken + "].");
+//            if (debug) ProgramHelper.logArray(relaxableArray, arrayToRelax);
+        }
     }
 }
