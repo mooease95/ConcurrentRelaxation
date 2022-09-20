@@ -41,10 +41,13 @@ public class ConcurrentRelaxerRunnable implements Runnable {
     }
 
     public double[][] setupAndRunThreads() {
+        startRelaxation = new CyclicBarrier(noOfThreads, new IncrementCounter());
+        precisionCheckpoint = new CyclicBarrier(noOfThreads, new FinishRelaxation());
         for (int i = 0; i < noOfThreads; i++) {
             Thread t = new Thread(this);
             t.start();
         }
+        System.out.println("Apparently have finished relaxing!!!");
         return arrayToRelax;
     }
 
@@ -65,14 +68,14 @@ public class ConcurrentRelaxerRunnable implements Runnable {
     private void initiateRelaxation(int[] rowList) {
         int size = arrayToRelax.length;
         boolean needsAnotherIteration = true;
-        while (needsAnotherIteration) {
+        // while (needsAnotherIteration) {
+        for (int tmp = 0; tmp < 2; tmp++) {
             needsAnotherIteration = false;
             double[][] newArrayToRelax = new double[size][size];
             for (int i = 0; i < size; i++) {
                 System.arraycopy(arrayToRelax[i], 0, newArrayToRelax[i], 0, arrayToRelax[0].length);
             }
             try {
-                startRelaxation = new CyclicBarrier(noOfThreads-1, new IncrementCounter());
                 startRelaxation.await();
             } catch (Exception e) {
                 RelaxerUtils.printThreadDebugMessages("Exception during relaxation starting barrier: \n" + e, false);
@@ -92,7 +95,6 @@ public class ConcurrentRelaxerRunnable implements Runnable {
                 }
             }
             try {
-                precisionCheckpoint = new CyclicBarrier(noOfThreads-1, new FinishRelaxation()); // TODO: Create new Runnable where the last thread does a precision check!
                 precisionCheckpoint.await();
             } catch (Exception e) {
                 RelaxerUtils.printThreadDebugMessages("Exception at precision check barrier: \n" + e, false);

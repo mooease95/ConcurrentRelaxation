@@ -12,6 +12,5 @@ public class ConcurrentRelaxer implements Relaxer {
     public void relaxArray() {
         ConcurrentRelaxerRunnable runnable = new ConcurrentRelaxerRunnable(relaxableArray, context);
         double[][] arrayToRelax = runnable.setupAndRunThreads();
-        if (context.isDebug()) ProgramHelper.logArray(relaxableArray, arrayToRelax); // TODO: This isn't triggered. Has the main thread died?
     }
 }
