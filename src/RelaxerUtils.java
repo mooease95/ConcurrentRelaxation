@@ -6,7 +6,10 @@ public class RelaxerUtils {
 
     public static boolean checkPrecision(RelaxableArray relaxableArray, double relaxedValue, int row, int column, double targetPrecision) {
         double correctValue = relaxableArray.getValueInCorrectArray(row, column);
-        return Math.abs(relaxedValue - correctValue) <= targetPrecision;
+        double obtainedPrecision = Math.abs(relaxedValue - correctValue);
+        printThreadDebugMessages(String.format("Checking precision. Correct value=[%s], relaxed value=[%s], targetPrecision=[%s], obtainedPrecision=[%s]",
+                                                correctValue, relaxedValue, targetPrecision, obtainedPrecision), true);
+        return obtainedPrecision <= targetPrecision;
     }
 
     public static void printThreadDebugMessages(String message, boolean info) {
