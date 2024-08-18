@@ -5,26 +5,24 @@ public class RowAllocator {
     private final int threads;
     private final int assignableRows;
     Stack<Integer> rowsStack;
-    private boolean remainderAssigned = false;
+    private int remainders;
 
     public RowAllocator(int threads, int assignableRows) {
         this.threads = threads;
         this.assignableRows = assignableRows;
+        this.remainders = assignableRows % threads;
 
         rowsStack = new Stack<>();
         rowAssignment();
-        if (assignableRows % threads == 0) {
-            remainderAssigned = true;
-        }
     }
 
     int[] allocateRows() {
         synchronized (this) {
             int rowsPerThread = assignableRows / threads;
             int[] rowsForThread;
-            if (!remainderAssigned) {
+            if (remainders > 0) {
                 rowsPerThread = rowsPerThread + 1;
-                remainderAssigned = true;
+                remainders--;
             }
             rowsForThread = new int[rowsPerThread];
             for (int i = 0; i < rowsPerThread; i++) {
